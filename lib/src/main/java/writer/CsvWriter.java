@@ -18,20 +18,13 @@ public class CsvWriter {
 			outputFile = new File(outputFolder,"result.csv");
 		}
 		
-		try {
-			
-		}catch(Exception e) {
-			
-		}
 	}
 	
-	public void writeAllLines(String fileName, int index ,String[] lines) {
-	    try (CSVWriter writer = new CSVWriter(new FileWriter(outputFile.getAbsolutePath()))) {
-	    	System.out.println("method is called");
-	    	writer.writeNext(new String[] {fileName,Integer.toString(index)});
+	public void writeAllLines(String fileName,String[] lines) {
+	    try (CSVWriter writer = new CSVWriter(new FileWriter(outputFile.getAbsolutePath(),true))) {
+	    	writer.writeNext(new String[] {fileName});
 	        writer.writeNext(lines);
-	        writer.writeNext(new String[] {fileName,Integer.toString(index)});
-	        writer.writeNext(lines);
+	        writer.writeNext(null);
 	    }catch(Exception e) {
 	    	e.printStackTrace();
 	    }

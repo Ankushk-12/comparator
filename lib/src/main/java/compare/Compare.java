@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import reader.CsvReader;
 import writer.CsvWriter;
+import util.Common;
 
 public class Compare {
 	final CsvWriter writer = new CsvWriter();
@@ -12,40 +13,34 @@ public class Compare {
 		List<String[]> prodfileData = null;
 		stagingfileData = CsvReader.readFile(stagingFile);
 		prodfileData = CsvReader.readFile(prodFile);
-		if (stagingfileData == null || prodfileData.isEmpty())
-			return false;
-
-		if (stagingfileData.size() != prodfileData.size())
-			return false;
-		int result = 0;
-		int index = 0;
+		Common.nullCheck(stagingfileData,prodfileData);
+		boolean result = true;
+		
+		if(stagingfileData.size() != prodfileData.size())return false;
+		
 		for (int i = 0; i < stagingfileData.size(); i++) {
 			String[] stagingFileRow = stagingfileData.get(i);
 			String[] prodFileRow = prodfileData.get(i);
-			if (stagingFileRow.length != prodFileRow.length)
-				return false;
+			if (stagingFileRow.length != prodFileRow.length) {
+				System.out.println("not same size");
+				writer.writeAllLines(stagingFile.getAbsolutePath(), stagingFileRow);
+				writer.writeAllLines(prodFile.getAbsolutePath(), prodFileRow);
+				continue;
+			}
 			for (int j = 0; j < stagingFileRow.length; j++) {
 				if (isNull(stagingFileRow[j]) && isNull(prodFileRow[j]))
 					continue;
-				result = stagingFileRow[j].compareTo(prodFileRow[j]);
-				if (result != 0)
-					index = j;
+				result = stagingFileRow[j].equals(prodFileRow[j]);
+				if(!result) break;
 			}
-			if (result == 1) {
+			if (!result) {
 				System.out.println("in the result 1");
-				writer.writeAllLines(stagingFile.getAbsolutePath(), index, stagingFileRow);
+				writer.writeAllLines(stagingFile.getAbsolutePath(), stagingFileRow);
 				System.out.println("in the result  1 staging");
-				writer.writeAllLines(prodFile.getAbsolutePath(), index, prodFileRow);
+				writer.writeAllLines(prodFile.getAbsolutePath(), prodFileRow);
 				System.out.println("in the result  1 prod");
-			} else if (result == -1) {
-				System.out.println("in the result -1");
-				writer.writeAllLines(prodFile.getAbsolutePath(), index, prodFileRow);
-				System.out.println("in the result  1 prod");
-				writer.writeAllLines(stagingFile.getAbsolutePath(), index, stagingFileRow);
-				System.out.println("in the result  1 staging");
 			}
 		}
-		if(result != 0) return false;
 		return true;
 	}
 
