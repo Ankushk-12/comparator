@@ -1,7 +1,10 @@
 package util;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import static comparator.Main.logger;
 
 public class Common {
@@ -31,4 +34,17 @@ public class Common {
 		logger.warning("File not found : "+file.getAbsolutePath());
 		return false;
 	}
+	
+	public static Set<String> listFiles(File [] files){
+		if(files.length ==0) {
+			logger.warning("No files exists in the folder");
+			return null;
+		}
+		Set<String> filesList = new HashSet<String>();
+		for(File file : files) {
+			filesList.add(file.getName());
+		}
+		return filesList;
+	}
 }
+

@@ -33,35 +33,38 @@ public class Main {
 			Set<String> prodFilesSet = new HashSet<String>();
 			Set<String> stagingfilesNotFound = new HashSet<String>();
 			Set<String> prodfilesNotFound = new HashSet<String>();
-			for (File file : stagingFilesList) {
-				stagingFilesSet.add(file.getName());
+			Set<String> listFiles = Common.listFiles(stagingFilesList);
+			if (listFiles == null) {
+				logger.warning("files not exists in "+stagingDir.getName()+ " the folder ");
+				System.exit(1);
 			}
-
-			for (File file : prodFilesList) {
-				if (!(stagingFilesSet.contains(file.getName()))) {
-					prodfilesNotFound.add(file.getName());
-				}
-				prodFilesSet.add(file.getName());
+			stagingFilesSet.addAll(Common.listFiles(stagingFilesList));
+			
+			listFiles = Common.listFiles(prodFilesList);
+			if (listFiles == null) {
+				logger.warning("files not exists in "+prodDir.getName()+ " the folder ");
+				System.exit(1);
 			}
+			prodFilesSet.addAll(Common.listFiles(prodFilesList));
 
 			for (String fileName : stagingFilesSet) {
 				if (prodFilesSet.contains(fileName)) {
 					File stagingFile = new File(stagingDir, fileName);
 					File prodFile = new File(prodDir, fileName);
 					Boolean fileExists = Common.fileExists(prodFile);
-					if(!fileExists) {
+					if (!fileExists) {
 						prodfilesNotFound.add(prodFile.getName());
-						logger.warning("File not found in prod folder"+prodFile);
+						logger.warning("File not found in prod folder" + prodFile);
 						continue;
 					}
-					
+
 					fileExists = Common.fileExists(stagingFile);
-					if(!fileExists) {
+					if (!fileExists) {
 						stagingfilesNotFound.add(stagingFile.getName());
-						logger.warning("File not found in staging folder"+stagingFile);
+						logger.warning("File not found in staging folder" + stagingFile);
 						continue;
 					}
-					
+
 					if (stagingFile.exists() && prodFile.exists()) {
 						Boolean result = compator.isIdentical(stagingFile, prodFile);
 						if (result) {
@@ -70,7 +73,6 @@ public class Main {
 							logger.info("There are some differnces in both the files");
 						}
 					}
-					logger.info("File not exists : "+fileName);
 				} else {
 					logger.warning("file not found : " + fileName);
 				}
