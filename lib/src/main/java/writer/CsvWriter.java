@@ -4,20 +4,19 @@ import java.io.File;
 import java.io.FileWriter;
 import static comparator.Main.environment;
 import com.opencsv.CSVWriter;
+import util.Common;
 
 public class CsvWriter {
 	private static String outputFolder = environment.get("OUTPUT_FOLDER");
+	private static String outputFileName = environment.get("OUTPUT_FILE_NAME","output.csv");
 	private static File outputFile = null;
 	
 	public CsvWriter() {
 		File outputDir = new File(outputFolder);
 		if(outputDir.isDirectory()) {
-			outputFile = new File(outputFolder,"result.csv");
-			if(outputFile.exists() && outputFile.isFile()) outputFile.delete();
-			
-			outputFile = new File(outputFolder,"result.csv");
+			Common.cleanDirectory(outputDir);
+			outputFile = new File(outputFolder,outputFileName);
 		}
-		
 	}
 	
 	public void writeAllLines(String fileName,String[] lines) {
